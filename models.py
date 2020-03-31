@@ -1,6 +1,9 @@
+from flask import flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 
 def connect_db(app):
@@ -21,14 +24,42 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
-def register_user_to_db(form):
-    """ takes form data and submits to DB """
+    @classmethod
+    def register_user(cls, form):
+        username = form.username.data
+        pwd = form.password.data
+        hashed = bcrypt.generate_password_hash(pwd)
 
-    username = form.data.username.data
-    password = form.data.username.data
-    email = form.data.username.data
-    first_name = form.data.username.data
-    last_name = form.data.username.data
+        email = form.email.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+
+        hashed_utf8 = hashed.decode("utf8")
+        return cls(username=username,
+                   password=hashed_utf8,
+                   email=email,
+                   first_name=first_name,
+                   last_name=last_name)
+
+    @classmethod
+    def log_in_user(cls, form):
+        username = form.username.data
+        submitted_pw = form.password.data
+        current_user = User.query.filter_by(username=username).first()
+
+        if current_user and bcrypt.check_password_hash(current_user.password,
+                                                       password=submitted_pw):
+            return current_user
+        else:
+            return False
+
+
+def add_user_to_db(user):
+    """ takes user data and submits to DB """
+
+    db.session.add(user)
+    db.session.commit()
+    return flash(f'{user.username} added!')
 
 
 # TODO: make helper function to Bcrypt / has the PW

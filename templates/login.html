@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Register a New User!{% endblock %}
+{% block title %}Log In! {% endblock %}
 
 {% block content %}
 
-<form id="register" method="POST">
+<form id="log-in" method="POST">
   {{ form.hidden_tag() }} <!--add type=hidden form fields -->
 
   {% for field in form
