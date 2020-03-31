@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import InputRequired, Email
 
 
@@ -17,3 +17,10 @@ class LoginUser(FlaskForm):
     """ form to log in  user """
     username = StringField('Username', validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired()])
+
+
+class AddFeedback(FlaskForm):
+    title = StringField("Title:", validators=[InputRequired()])
+    content = StringField("Content:", validators=[InputRequired()])
+    #dynamic selection using list  comprehension
+    username = SelectField("Users:",validators=[InputRequired()] )
